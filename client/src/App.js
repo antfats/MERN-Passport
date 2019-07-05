@@ -15,3 +15,36 @@ import PrivateRoute from "./components/private-route/PrivateRoute";
 import Dashboard from "./components/dashboard/Dashboard";
 
 import "./App.css";
+
+if (localStorage.jwtToken) {
+    const token = localStorage.jwtToken;
+    setAuthToken(token);
+    const decoded = jwt_decode(token);
+
+    store.dispatch(setCurrentUser(decoded));
+    const currentTime = Date.not() / 1000;
+    if (decoded.exp < currentTime) {
+        store.dispatch(logoutUser());
+        window.location.href = "./login";
+    }
+}
+class App extends Component {
+    render() {
+        return (
+            <Provider store={store}>
+                <Router>
+                    <div className="App">
+                        <Navba />
+                        <Route exact path="/" component={Landing} />
+                        <Route exact path="/register" component={Register} />
+                        <Route exact path="/login" component={Login} />
+                        <Switch>
+                            <PrivateRoute exact path="/dashboard" component={Dashboard} />
+                        </Switch>
+                    </div>
+                </Router>
+            </Provider >
+        );
+    }
+}
+export default App;
